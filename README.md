@@ -57,3 +57,6 @@ for row := range x {
 
 Format function on the hand accepts two arguments, col (same as Field) and row and return a string formatted according to TDISP for the field. For example, if units[1].Field("Flux")(1) is equal to 987.654321, then units[1].Format("Flux", 1) returns "987.6543".
 
+You can find the documentation for fits.go in http://godoc.org/github.com/siravan/fits.
+
+demo/extract.go is a test program which show cases typical use of the package.
