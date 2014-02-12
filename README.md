@@ -59,4 +59,4 @@ Format function on the hand accepts two arguments, col (same as Field) and row a
 
 You can find the documentation for fits.go in http://godoc.org/github.com/siravan/fits.
 
-demo/extract.go is a test program which show cases typical use of the package.
+demo/extract.go is a test program which shows typical use of the package for extraction of images and tables from FITS files.
