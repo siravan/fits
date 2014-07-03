@@ -832,7 +832,7 @@ func (h *Unit) verifyExtension() error {
 	if !ok {
 		return fmt.Errorf("No BITPIX in the extended header")
 	}
-	if n != 8 && n != 16 && n != 32 && n != 64 && n != -32 && n == -64 {
+	if n != 8 && n != 16 && n != 32 && n != 64 && n != -32 && n != -64 {
 		return fmt.Errorf("Invalid BITPIX value")
 	}
 	naxis, ok := h.Keys["NAXIS"].(int)
