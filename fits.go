@@ -805,7 +805,7 @@ func (h *Unit) verifyPrimary() error {
 	if !ok {
 		return fmt.Errorf("No BITPIX in the primary header")
 	}
-	if n != 8 && n != 16 && n != 32 && n != 64 && n != -32 && n == -64 {
+	if n != 8 && n != 16 && n != 32 && n != 64 && n != -32 && n != -64 {
 		return fmt.Errorf("Invalid BITPIX value")
 	}
 	n, ok = h.Keys["NAXIS"].(int)
