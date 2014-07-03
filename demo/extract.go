@@ -14,7 +14,6 @@ package main
 
 import (
 	"bytes"
-	"fits"
 	"fmt"
 	"image"
 	"image/color"
@@ -26,6 +25,8 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	"github.com/siravan/fits"
 )
 
 func main() {
