@@ -13,7 +13,7 @@
 package main
 
 import (
-	"bytes"	
+	"bytes"
 	"fmt"
 	"image"
 	"image/color"
@@ -24,8 +24,9 @@ import (
 	"net/url"
 	"os"
 	"path"
-	"strings"    
-    "fits"
+	"strings"
+
+	"github.com/siravan/fits"
 )
 
 func main() {
@@ -154,17 +155,17 @@ func writeImage(h *fits.Unit, name string) {
 	}
 }
 
-// writeTable generates a text file containing the table data of h 
+// writeTable generates a text file containing the table data of h
 // It processes both text (XTENSION=TABLE) and binary (XTENSION=BINTABLE) tables
 func writeTable(h *fits.Unit, name string) {
 	g, _ := os.Create(name + ".tab")
 	defer g.Close()
 	ncols := h.Keys["TFIELDS"].(int)
 
-	label := "" // label is the list of field names/labels 
+	label := "" // label is the list of field names/labels
 	for col := 0; col < ncols; col++ {
 		ttype := h.Keys[fits.Nth("TTYPE", col+1)].(string)
-		w := len(h.Format(col, 0)) // the label for each field is resized based on the size of the data on the first row of data 
+		w := len(h.Format(col, 0)) // the label for each field is resized based on the size of the data on the first row of data
 		label += fmt.Sprintf("%-*.*s", w, w, ttype)
 	}
 	fmt.Fprintln(g, label)
