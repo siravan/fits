@@ -1,8 +1,8 @@
 // Copyright 2014 Shahriar Iravanian (siravan@svtsim.com).  All rights reserved.
 // Use of this source code is governed by a MIT license that can be found in the LICENSE file.
 //
-// Package fits reads and processes FITS files. It is written in pure golang and is not a wrapper around another library or a direct translation of 
-// another library to golang. The main purpose is to provide a native golang solution to reading FITS file and to assess the suitability of golang for 
+// Package fits reads and processes FITS files. It is written in pure golang and is not a wrapper around another library or a direct translation of
+// another library to golang. The main purpose is to provide a native golang solution to reading FITS file and to assess the suitability of golang for
 // scientific and numerical applications.
 //
 // FITS is a common format for astronomical image and data.
@@ -25,7 +25,7 @@
 // The basic usage of the package is by calling Open function. It accepts a reader that should provide a valid FITS file.
 // The output is a []*fits.Unit, where Unit represents a Header/Data Unit (i.e. a header with the corresponding data).
 // Unit provides a set of variables and functions to access the HDU data.
-// 
+//
 // Let 'test.fits' be a FITS file with two HDU. The first one is of type SIMPLE and contains a single two-dimensional image with the following parameters:
 //
 //      BITPIX  =  -32
@@ -34,7 +34,7 @@
 //      NAXIS2  =  256
 //
 // The second HDU contains a binary table (XTENSION=BINTABLE):
-//      
+//
 //      BITPIX  =  8
 //      NAXIS   =  2
 //      NAXIS1  =  100
@@ -44,18 +44,18 @@
 //      TTYPE   =  FLUX
 //      TDISP1  =  F10.4
 //
-// To read this file, we first call 
+// To read this file, we first call
 //
 //      units := fits.Open("test.fits")
 //
-// Now, units[0] points to the first HDU. We can access the header keys by using units.Keys map. 
+// Now, units[0] points to the first HDU. We can access the header keys by using units.Keys map.
 // For example, units[0].Keys["BITPIX"].(int) returns -32. Note that Keys stores interface{} and appropriate type-assertion needs to be done.
 // Unit.Naxis returns a slice of integers ([]int) containing all NAXIS data. For example, units[0].Naxis is equal to [512, 256].
 // We can access the image data points by using one of the three accessor functions: Unit.At, Unit.IntAt and Unit.FloatAt.
-// Each function accepts NAXIS integer arguments and returns the pixel value at that location. 
+// Each function accepts NAXIS integer arguments and returns the pixel value at that location.
 // Unit.At returns an interface{} and needs to be type-asserted before use. Unit.IntAt and Unit.FloatAt return int64 and float64, respectively.
 //
-// For table data, we use two other accessor functions: Field and Format. 
+// For table data, we use two other accessor functions: Field and Format.
 // Field accepts one argument, col, that define a field. It can be 0-based int or a string.
 // For example, units[1].Field(0) and units[1].Field("FLUX") both points to the same column.
 // The return value of Field is another function, which is the actual accessor function and accepts one int argument representing a row.
@@ -83,11 +83,11 @@ import (
 	"sync"
 )
 
-// FieldFunc are the type of accessor functions returned by Unit.Field() 
+// FieldFunc are the type of accessor functions returned by Unit.Field()
 // FieldFunc is used to access the value of cells in a text or binary table (XTENSION=TABLE or XTENSION=BINTABLE)
 type FieldFunc func(row int) interface{}
 
-// Unit stored the header and data of a single HDU (Header Data Unit) as defined by FITS standard  
+// Unit stored the header and data of a single HDU (Header Data Unit) as defined by FITS standard
 // Data points to a flat array holding the HDU data
 // Its type is []byte for tables and is determined by BITPIX for images:
 //
@@ -108,14 +108,14 @@ type Unit struct {
 	fields map[string]FieldFunc // A map of FieldFunc (field-name => accessor-function)
 	// field-name is based on TTYPE{k} keys in the header
 	class string                     // class holds the type of the Header (SIMPLE, IMAGE, TABLE and BINTABLE)
-	blank int                        // The value of BLANK key in the header 
+	blank int                        // The value of BLANK key in the header
 	At    func(a ...int) interface{} // Accessor function that returns the value of a pixel based on its coordinates
 	// a... represents NAXIS integers corresponding to NAXIS1, NAXIS2,...
-	// The return result type is interface{}. The concrete type is determined by BITPIX                                        
+	// The return result type is interface{}. The concrete type is determined by BITPIX
 	IntAt   func(a ...int) int64   // A helper accessor function that returns the pixel value as int64
 	FloatAt func(a ...int) float64 // A helper accessor function that returns the pixel value as float64
 	Blank   func(a ...int) bool    // returns true if pixel type is integral and the pixel pointed by a... is equal to blank,
-	// or the pixel type is float and its value is NaN                                             
+	// or the pixel type is float and its value is NaN
 }
 
 // Reader is a buffered Reader implementation that works based on the FITS block structure (each 2880 bytes long)
@@ -131,16 +131,16 @@ type Reader struct {
 // Field returns a FieldFunc corresponding to col
 // If col is int, the col'th field is returned (note: col is 0 based, so col=1 means TFORM2)
 // If col a string, the field with TDISP equal to col is returned
-// Fields are held in a map (Unit.fields) based on their name (TDISP). 
+// Fields are held in a map (Unit.fields) based on their name (TDISP).
 // In addition, for each field, an entry with key "#name" is added to Unit.fields to facilitate the search for TDISP based on the name
 //
 // Note: this function returns an accessor function, that needs to be called to obtain the actual cell value
 // For example, assume h is a table. One of its column is named "ID" of type "J" (int32)
 // To obtain the value of the cell located at the intersection of the third row (row=2) and column "ID", we write
 //
-//  fn := h.Field("ID") 
+//  fn := h.Field("ID")
 //  val := fn(2).(int32)
-// 
+//
 func (h *Unit) Field(col interface{}) FieldFunc {
 	var x FieldFunc
 	var ok bool
@@ -164,10 +164,10 @@ func (h *Unit) Field(col interface{}) FieldFunc {
 
 // Format returns a formatted string based on the given col and row and TDISP of the col
 // col can be an int or a string (same as Field)
-// The return value is a string, which is obtained by 
+// The return value is a string, which is obtained by
 //      1. Finding the FieldFunc based on col
-//      2. Running the FieldFunc by passing row as an argument 
-//      3. Applying format to the result 
+//      2. Running the FieldFunc by passing row as an argument
+//      3. Applying format to the result
 //
 func (h *Unit) Format(col interface{}, row int) string {
 	var fn FieldFunc
@@ -202,14 +202,14 @@ func (h *Unit) Format(col interface{}, row int) string {
 		// accounts for ENw.d and ESw.d formats
 		if len(d) > 1 && (d[1] == 'N' || d[1] == 'S') {
 			d = string(d[0]) + string(d[2:]) // removes the second character from the format string
-			// The standard allows to disregard this secondary format characters 
+			// The standard allows to disregard this secondary format characters
 		}
 
 		fmt.Sscanf(d, "%c%d.%d", &code, &w, &m)
 
 		switch code {
 		case 'A':
-			format = fmt.Sprintf("%%%d.%ds", w, w) // Aw -> %ws    
+			format = fmt.Sprintf("%%%d.%ds", w, w) // Aw -> %ws
 		case 'I':
 			format = fmt.Sprintf("%%%dd", w) // Iw -> %wd
 		case 'B':
@@ -344,7 +344,7 @@ done:
 	for !b.IsEOF() {
 		h, err := b.NewHeader()
 		if err != nil {
-			err = nil // EOF, not an error?            
+			err = nil // EOF, not an error?
 			break
 		}
 		fits = append(fits, h)
@@ -543,10 +543,10 @@ func (h *Unit) loadData(b *Reader) error {
 }
 
 // accessorBin generates the accessor function for a field in a binary table (XTENSION=BINTABLE)
-// loadTable function processes TFORM for each field 
+// loadTable function processes TFORM for each field
 // For binary tables, TFORM is like rT, where r is the repeat and T is the type code
 // With the exception of code='A' (string-type), the accessor functions are different for repeat=1 (returns an atomic value) vs repeat>1 (returns a fixed array)
-// Note, variable arrays (type P and Q) and packed bits (type X) are not supported in the current version 
+// Note, variable arrays (type P and Q) and packed bits (type X) are not supported in the current version
 // col is the byte index of the value of the field from the beginning of each record
 func (h *Unit) accessorBin(code byte, repeat int, col *int) (fn func(int) interface{}, disp string) {
 	c := *col
@@ -743,12 +743,12 @@ func (h *Unit) accessorBin(code byte, repeat int, col *int) (fn func(int) interf
 }
 
 // accessorText generates the accessor function for a field in a text table (XTENSION=TABLE)
-// loadTable function processes TFORM for each field 
+// loadTable function processes TFORM for each field
 // For text tables, TFORM is like Tw or Tw.d (T=code and w=repeat)
 func (h *Unit) accessorText(code byte, repeat int, col *int) (fn func(int) interface{}, disp string) {
 	c := *col - 1
 	var f func() interface{}
-	b := new(Reader) // note that b.elem does not need to be set because we only use b.ReadString 
+	b := new(Reader) // note that b.elem does not need to be set because we only use b.ReadString
 	b.buf = h.Data.([]byte)
 	b.right = len(b.buf)
 
@@ -933,7 +933,7 @@ func (h *Unit) loadTable(b *Reader, binary bool) error {
 }
 
 // NewReader generates a new fits.Reader that wraps the given reader
-// 2880 is the standard FITS file block size 
+// 2880 is the standard FITS file block size
 func NewReader(reader io.Reader) *Reader {
 	p := new(Reader)
 	p.buf = make([]byte, 2880)
@@ -996,7 +996,7 @@ func (b *Reader) ReadString(n int) string {
 // ReadInt16 reads an int16 encoded in big-endian binary
 // Note that the FITS standard supports only big-endian binaries
 func (b *Reader) ReadInt16() int16 {
-	b.Read(b.elem[0:2]) // we need to copy into an elem buf instead of pointing directly to b.buf because 
+	b.Read(b.elem[0:2]) // we need to copy into an elem buf instead of pointing directly to b.buf because
 	// the target value may straddle a block boundary
 	x := uint16(b.elem[1]) | uint16(b.elem[0])<<8
 	return int16(x)
@@ -1158,4 +1158,3 @@ func (b *Reader) NewHeader() (h *Unit, err error) {
 	}
 	return h, nil
 }
-
